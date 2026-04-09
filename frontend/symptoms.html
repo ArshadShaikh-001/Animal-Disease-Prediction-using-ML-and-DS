@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Symptom Selection - AI Disease Prediction System</title>
+    <link rel="stylesheet" href="/theme.css">
    <style>
     * {
         margin: 0;
@@ -387,10 +388,11 @@
 <body>
     <header class="header">
         <div class="header-content">
-            <a href="index.html" class="logo">
+            <a href="/" class="logo">
                 <div class="logo-icon">AI</div>
                 <span>VetPredict</span>
             </a>
+            <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme" title="Toggle theme">☾</button>
         </div>
     </header>
 
@@ -555,7 +557,7 @@
                     </div>
 
                     <div class="button-group">
-                        <a href="profile.html" class="btn btn-back">Back</a>
+                        <a href="/profile" class="btn btn-back">Back</a>
                         <button type="submit" class="btn btn-next" id="nextBtn">
                             Analyze Symptoms
                         </button>
@@ -597,6 +599,7 @@
 
         updateSymptomCount();
     </script>
+    <script src="/theme.js"></script>
 </body>
 
 </html>

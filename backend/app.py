@@ -14,6 +14,11 @@ app = Flask(
 def profile():
     return app.send_static_file("profile.html")
 
+@app.route("/index")
+@app.route("/index.html")
+def index():
+    return app.send_static_file("index.html")
+
 
 @app.route("/analysis")
 def analysis():
@@ -23,6 +28,16 @@ def analysis():
 @app.route("/result-page")
 def result_page():
     return app.send_static_file("result.html")
+
+
+@app.route("/theme.css")
+def theme_css():
+    return app.send_static_file("theme.css")
+
+
+@app.route("/theme.js")
+def theme_js():
+    return app.send_static_file("theme.js")
 
 
 
