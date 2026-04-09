@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animal Profile - AI Disease Prediction System</title>
+  <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: radial-gradient(circle at center, #062d24 0%, #000000 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: #e2e8f0;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(12px);
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(56, 161, 105, 0.2);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .main-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .profile-card {
+            background: #111111;
+            border-radius: 20px;
+            border: 1px solid rgba(56, 161, 105, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            max-width: 600px;
+            width: 100%;
+            overflow: hidden;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #062d24 0%, #000000 100%);
+            padding: 2.5rem 2rem;
+            color: white;
+            text-align: center;
+            border-bottom: 1px solid rgba(56, 161, 105, 0.1);
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(56, 161, 105, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #68d391;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            background: #38a169;
+            color: white;
+            border-color: #48bb78;
+            transform: scale(1.15);
+            box-shadow: 0 0 15px rgba(56, 161, 105, 0.4);
+        }
+
+        .step-line {
+            width: 50px;
+            height: 3px;
+            background: rgba(56, 161, 105, 0.2);
+        }
+
+        .card-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-header p {
+            color: #a0aec0;
+            font-size: 1rem;
+        }
+
+        .card-body {
+            padding: 2.5rem 2rem;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #cbd5e0;
+            margin-bottom: 0.7rem;
+            font-size: 0.95rem;
+        }
+
+        .required { color: #f56565; margin-left: 3px; }
+        .optional-tag { color: #718096; font-size: 0.85rem; margin-left: 5px; }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #2d3748;
+            border-radius: 10px;
+            font-size: 1rem;
+            background: #1a202c;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #38a169;
+            box-shadow: 0 0 0 3px rgba(56, 161, 105, 0.15);
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 20px;
+            border: 2px solid #2d3748;
+            border-radius: 10px;
+            cursor: pointer;
+            background: #1a202c;
+            color: #a0aec0;
+            transition: all 0.3s ease;
+        }
+
+        .radio-option input[type="radio"]:checked + .radio-label {
+            border-color: #38a169;
+            background: linear-gradient(135deg, #38a169 0%, #22543d 100%);
+            color: white;
+        }
+
+        /* --- Updated Button Sizes --- */
+        .button-group {
+            display: flex;
+            gap: 1.25rem;
+            margin-top: 3rem;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 18px 32px; /* Increased padding for a larger hit area */
+            border: none;
+            border-radius: 14px; /* Slightly more rounded for the larger size */
+            font-size: 1.15rem; /* Larger text */
+            font-weight: 700; /* Bolder text */
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            letter-spacing: 0.02em;
+        }
+
+        .btn-back {
+            background: #2d3748;
+            color: #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-back:hover {
+            background: #4a5568;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+            color: white;
+            box-shadow: 0 6px 20px rgba(56, 161, 105, 0.3);
+        }
+
+        .btn-next:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(56, 161, 105, 0.5);
+        }
+
+        .btn-next:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-next:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none;
+        }
+        /* ---------------------------- */
+
+        .info-banner {
+            background: rgba(49, 130, 206, 0.1);
+            border-left: 4px solid #3182ce;
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .button-group { flex-direction: column; gap: 1rem; }
+            .btn { width: 100%; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">AI</div>
+                <span>VetPredict</span>
+            </a>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="profile-card">
+            <div class="card-header">
+                <div class="step-indicator">
+                    <div class="step active">1</div>
+                    <div class="step-line"></div>
+                    <div class="step">2</div>
+                    <div class="step-line"></div>
+                    <div class="step">3</div>
+                </div>
+                <h1>Animal Information</h1>
+                <p>Help us understand your animal better</p>
+            </div>
+
+            <div class="card-body">
+                <div class="info-banner">
+                    <div class="info-icon">ℹ️</div>
+                    <p>
+                        Providing accurate information helps our AI system make better predictions.
+                        All fields marked with <span style="color: #e53e3e;">*</span> are required.
+                    </p>
+                </div>
+
+                <!-- 🔹 FORM CONNECTED TO BACKEND -->
+                <form id="profileForm" action="/symptoms" method="post">
+                    <div class="form-section">
+                        <label class="form-label">
+                            Animal Type<span class="required">*</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <select id="animalType" name="animal_type" class="form-select" required>
+                                <option value="">Select animal type</option>
+                                <option value="Cow">Cow</option>
+                                <option value="Dog">Dog</option>
+                                <option value="Goat">Goat</option>
+                                <option value="Sheep">Sheep</option>
+                                <option value="Cat">Cat</option>
+                                <option value="Horse">Horse</option>
+                                <option value="Rabbit">Rabbit</option>
+                                <option value="Pig">Pig</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">
+                            Age<span class="required">*</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <input 
+                                type="number" 
+                                id="age"
+                                name="age"
+                                class="form-input"
+                                placeholder="Enter age in years"
+                                min="0"
+                                max="50"
+                                step="0.1"
+                                required
+                            />
+                            <span class="input-icon">yrs</span>
+                        </div>
+                        <p class="helper-text">Enter approximate age if exact age is unknown</p>
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">
+                            Gender<span class="required">*</span>
+                        </label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="male" name="gender" value="Male" required>
+                                <label for="male" class="radio-label">Male</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="female" name="gender" value="Female" required>
+                                <label for="female" class="radio-label">Female</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <label class="form-label">
+                            Weight <span style="color:#ff4d6d;">*</span>
+                        </label>
+
+                        <div class="input-wrapper">
+                            <input 
+                                type="number"
+                                id="weight"
+                                name="weight"
+                                class="form-input"
+                                placeholder="Enter weight in kilograms"
+                                min="0"
+                                max="2000"
+                                step="0.1"
+                                required
+                            />
+                            <span class="input-icon">kg</span>
+                        </div>
+
+                        <p class="helper-text">
+                            Weight is required for accurate disease prediction
+                        </p>
+                    </div>
+
+                    <div class="button-group">
+                        <a href="index.html" class="btn btn-back">Back</a>
+                        <button type="submit" class="btn btn-next" id="nextBtn">
+                            Next: Symptoms
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔹 VALIDATION SCRIPT (KEPT MINIMAL) -->
+    <script>
+        const form = document.getElementById('profileForm');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function checkFormValidity() {
+            const animalType = document.getElementById('animalType').value;
+            const age = document.getElementById('age').value;
+            const gender = document.querySelector('input[name="gender"]:checked');
+            const weight = document.getElementById('weight').value;
+
+            nextBtn.disabled = !(animalType && age && gender && weight);
+        }
+
+        document.querySelectorAll('input, select').forEach(el => {
+            el.addEventListener('input', checkFormValidity);
+            el.addEventListener('change', checkFormValidity);
+        });
+
+        checkFormValidity();
+    </script>
+</body>
+
+</html>

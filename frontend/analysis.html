@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Analysis - Animal Disease Prediction System</title>
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        /* Dark Forest/OLED Radial Theme */
+        background: radial-gradient(circle at center, #062d24 0%, #000000 100%);
+        background-attachment: fixed;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        color: #e2e8f0;
+    }
+
+    .header {
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(12px);
+        padding: 1rem 0;
+        border-bottom: 1px solid rgba(56, 161, 105, 0.2);
+    }
+
+    .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .logo {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+    }
+
+    .logo-icon {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+    }
+
+    .main-container {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+    }
+
+    .analysis-card {
+        background: #111111;
+        border-radius: 20px;
+        border: 1px solid rgba(56, 161, 105, 0.2);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+        max-width: 700px;
+        width: 100%;
+        overflow: hidden;
+        animation: slideUp 0.6s ease-out;
+    }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #062d24 0%, #000000 100%);
+        padding: 2.5rem 2rem;
+        color: white;
+        text-align: center;
+        border-bottom: 1px solid rgba(56, 161, 105, 0.1);
+    }
+
+    .step-indicator {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 1.5rem;
+    }
+
+    .step {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(56, 161, 105, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #68d391;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .step.completed {
+        background: rgba(56, 161, 105, 0.2);
+    }
+
+    .step.completed::after {
+        content: '✓';
+        position: absolute;
+        font-size: 1.2rem;
+    }
+
+    .step.active {
+        background: #38a169;
+        color: white;
+        border-color: #48bb78;
+        transform: scale(1.15);
+        box-shadow: 0 0 15px rgba(56, 161, 105, 0.4);
+    }
+
+    .step-line {
+        width: 50px;
+        height: 3px;
+        background: rgba(56, 161, 105, 0.2);
+    }
+
+    .card-header h1 {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .card-header p {
+        color: #a0aec0;
+        font-size: 1rem;
+    }
+
+    .card-body {
+        padding: 3rem 2rem;
+        text-align: center;
+    }
+
+    /* --- AI Visual Animations --- */
+    .ai-visual {
+        margin-bottom: 2.5rem;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .brain-icon {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, #38a169 0%, #22543d 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3.5rem;
+        color: white;
+        position: relative;
+        animation: pulse 2s ease-in-out infinite;
+        z-index: 2;
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(56, 161, 105, 0.7);
+        }
+        50% {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 20px rgba(56, 161, 105, 0);
+        }
+    }
+
+    .orbit-ring {
+        position: absolute;
+        border: 2px solid rgba(56, 161, 105, 0.2);
+        border-radius: 50%;
+        animation: rotate 3s linear infinite;
+        z-index: 1;
+    }
+
+    .orbit-ring:nth-child(1) { width: 160px; height: 160px; }
+    .orbit-ring:nth-child(2) {
+        width: 210px;
+        height: 210px;
+        animation-duration: 5s;
+        animation-direction: reverse;
+        border-color: rgba(56, 161, 105, 0.1);
+    }
+
+    .orbit-dot {
+        width: 12px;
+        height: 12px;
+        background: #68d391;
+        border-radius: 50%;
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        box-shadow: 0 0 10px #38a169;
+    }
+
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    .status-text {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #e2e8f0;
+        margin-bottom: 1rem;
+        min-height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .progress-bar-container {
+        width: 100%;
+        height: 8px;
+        background: #1a202c;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #38a169 0%, #062d24 100%);
+        border-radius: 10px;
+        width: 0%;
+        animation: progressAnimation 3s ease-in-out forwards;
+    }
+
+    @keyframes progressAnimation {
+        0% { width: 0%; }
+        33% { width: 35%; }
+        66% { width: 70%; }
+        100% { width: 100%; }
+    }
+
+    /* --- Info Cards Grid --- */
+    .info-cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .info-card {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 1.2rem;
+        border-radius: 12px;
+        border: 1px solid rgba(56, 161, 105, 0.1);
+        text-align: center;
+        opacity: 0;
+        animation: slideInUp 0.5s ease-out forwards;
+    }
+
+    .info-card:nth-child(1) { animation-delay: 0.3s; }
+    .info-card:nth-child(2) { animation-delay: 0.6s; }
+    .info-card:nth-child(3) { animation-delay: 0.9s; }
+
+    @keyframes slideInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .info-card-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .info-card-title { font-size: 0.85rem; font-weight: 600; color: #a0aec0; }
+    .info-card-value {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #68d391;
+        margin-top: 0.3rem;
+    }
+
+    /* --- Loading Dots --- */
+    .processing-dots { display: inline-flex; gap: 4px; }
+    .dot {
+        width: 8px;
+        height: 8px;
+        background: #38a169;
+        border-radius: 50%;
+        animation: bounce 1.4s infinite ease-in-out;
+    }
+
+    .dot:nth-child(1) { animation-delay: -0.32s; }
+    .dot:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes bounce {
+        0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
+        40% { transform: scale(1); opacity: 1; }
+    }
+
+    @media (max-width: 768px) {
+        .info-cards { grid-template-columns: 1fr; }
+        .brain-icon { width: 100px; height: 100px; font-size: 3rem; }
+        .orbit-ring:nth-child(1) { width: 140px; height: 140px; }
+        .orbit-ring:nth-child(2) { width: 180px; height: 180px; }
+    }
+</style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">AI</div>
+                <span>VetPredict</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="analysis-card">
+            <div class="card-header">
+                <div class="step-indicator">
+                    <div class="step completed">✓</div>
+                    <div class="step-line"></div>
+                    <div class="step completed">✓</div>
+                    <div class="step-line"></div>
+                    <div class="step active">3</div>
+                </div>
+                <h1>AI Analysis in Progress</h1>
+                <p>Our advanced system is analyzing the health data</p>
+            </div>
+
+            <div class="card-body">
+                <div class="ai-visual">
+                    <div class="orbit-ring">
+                        <div class="orbit-dot"></div>
+                    </div>
+                    <div class="orbit-ring">
+                        <div class="orbit-dot"></div>
+                    </div>
+                    <div class="brain-icon">🧠</div>
+                </div>
+
+                <div class="status-text" id="statusText">
+                    Initializing AI system
+                    <div class="processing-dots">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                </div>
+
+                <div class="progress-bar-container">
+                    <div class="progress-bar"></div>
+                </div>
+
+                <div class="info-cards">
+                    <div class="info-card">
+                        <div class="info-card-icon">📊</div>
+                        <div class="info-card-title">Data Points</div>
+                        <div class="info-card-value" id="dataPoints">0</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-icon">🔍</div>
+                        <div class="info-card-title">Patterns Analyzed</div>
+                        <div class="info-card-value" id="patterns">0</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-card-icon">⚡</div>
+                        <div class="info-card-title">Confidence</div>
+                        <div class="info-card-value" id="confidence">0%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const statusMessages = [
+            'Validating symptoms',
+            'Analyzing health patterns',
+            'Running AI disease prediction model',
+            'Calculating confidence scores',
+            'Finalizing results'
+        ];
+
+        const statusText = document.getElementById('statusText');
+        const dataPointsEl = document.getElementById('dataPoints');
+        const patternsEl = document.getElementById('patterns');
+        const confidenceEl = document.getElementById('confidence');
+
+        let currentMessageIndex = 0;
+        let dataPoints = 0;
+        let patterns = 0;
+        let confidence = 0;
+
+        function updateStatus() {
+            if (currentMessageIndex < statusMessages.length) {
+                statusText.innerHTML = statusMessages[currentMessageIndex] + '<div class="processing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+                currentMessageIndex++;
+            }
+        }
+
+        function animateCounters() {
+            const dataInterval = setInterval(() => {
+                if (dataPoints < 127) {
+                    dataPoints += Math.floor(Math.random() * 15) + 5;
+                    if (dataPoints > 127) dataPoints = 127;
+                    dataPointsEl.textContent = dataPoints;
+                }
+            }, 100);
+
+            const patternsInterval = setInterval(() => {
+                if (patterns < 43) {
+                    patterns += Math.floor(Math.random() * 5) + 1;
+                    if (patterns > 43) patterns = 43;
+                    patternsEl.textContent = patterns;
+                }
+            }, 150);
+
+            const confidenceInterval = setInterval(() => {
+                if (confidence < 94) {
+                    confidence += Math.floor(Math.random() * 8) + 3;
+                    if (confidence > 94) confidence = 94;
+                    confidenceEl.textContent = confidence + '%';
+                }
+            }, 120);
+
+            setTimeout(() => {
+                clearInterval(dataInterval);
+                clearInterval(patternsInterval);
+                clearInterval(confidenceInterval);
+                dataPointsEl.textContent = '127';
+                patternsEl.textContent = '43';
+                confidenceEl.textContent = '94%';
+            }, 2800);
+        }
+
+        updateStatus();
+        const statusInterval = setInterval(() => {
+            updateStatus();
+        }, 600);
+
+        animateCounters();
+
+        setTimeout(() => {
+            clearInterval(statusInterval);
+            window.location.href = '/result-page';
+        }, 3000);
+    </script>
+</body>
+</html>

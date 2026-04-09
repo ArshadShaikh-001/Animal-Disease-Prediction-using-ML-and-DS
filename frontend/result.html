@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>AI Prediction Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #000000;
+            --card-bg: rgba(10, 25, 20, 0.7);
+            --primary: #38a169;
+            /* Forest Green */
+            --secondary: #6D28D9;
+            /* Deep Purple */
+            --accent: #68d391;
+            /* Light Green */
+            --danger: #f56565;
+            --warning: #ecc94b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            /* OLED Black with Top-Center Green Glow */
+            background: radial-gradient(circle at center top, #062d24 0%, #000000 100%);
+            background-attachment: fixed;
+            color: #e2e8f0;
+            padding: 30px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(56, 161, 105, 0.2);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .header span {
+            color: var(--accent);
+            text-shadow: 0 0 15px rgba(104, 211, 145, 0.3);
+        }
+
+        /* Grid layout */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        /* Cards - Reference Image Glassmorphism */
+        .card {
+            background: rgba(25, 28, 41, 0.6);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary);
+            background: rgba(10, 25, 20, 0.8);
+        }
+
+        .card h3 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #a0aec0;
+            margin-bottom: 20px;
+        }
+
+        /* Disease Text */
+        .disease {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #68d391, #38a169);
+
+            /* Standard property (add this) */
+            background-clip: text;
+
+            /* Vendor prefix for Chrome, Safari, and Edge */
+            -webkit-background-clip: text;
+
+            /* Essential: makes the text color transparent to see the background */
+            -webkit-text-fill-color: transparent;
+
+            /* Fallback for older browsers */
+            color: #38a169;
+        }
+
+        /* Circular confidence - OLED Style */
+        .circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            /* Gradient ring based on confidence */
+            background: conic-gradient(var(--primary) 78%, rgba(255, 255, 255, 0.05) 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: auto;
+            box-shadow: 0 0 20px rgba(56, 161, 105, 0.2);
+        }
+
+        .circle span {
+            width: 115px;
+            height: 115px;
+            background: #000000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        /* Risk badge */
+        .risk {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+        }
+
+        .high {
+            background: rgba(245, 101, 101, 0.15);
+            color: #fc8181;
+            border: 1px solid rgba(245, 101, 101, 0.3);
+        }
+
+        /* Symptoms */
+        .symptoms li {
+            list-style: none;
+            margin: 12px 0;
+            padding-left: 28px;
+            position: relative;
+            color: #cbd5e0;
+            font-weight: 500;
+        }
+
+        .symptoms li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: 900;
+        }
+
+        /* Actions Button - Sized Up */
+        .actions {
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        .actions button {
+            background: linear-gradient(135deg, var(--primary) 0%, #2f855a 100%);
+            border: none;
+            padding: 20px 50px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 1.15rem;
+            cursor: pointer;
+            color: #ffffff;
+            box-shadow: 0 10px 25px rgba(56, 161, 105, 0.3);
+            transition: all 0.3s ease;
+            letter-spacing: 0.02em;
+        }
+
+        .actions button:hover {
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 15px 35px rgba(56, 161, 105, 0.5);
+        }
+
+        .actions button:active {
+            transform: scale(0.98);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #718096;
+            letter-spacing: 0.02em;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .actions button {
+                width: 100%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>AI Health <span>Dashboard</span></h1>
+        <div>Prediction Summary</div>
+    </div>
+
+    <div class="dashboard">
+
+        <div class="card">
+            <h3>Predicted Disease</h3>
+            <div class="disease" id="diseaseName">Loading...</div>
+        </div>
+
+        <div class="card">
+            <h3>Prediction Confidence</h3>
+            <div class="circle">
+                <span id="confidenceValue">--%</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Risk Level</h3>
+            <div class="risk" id="riskLevel">--</div>
+        </div>
+
+        <div class="card">
+            <h3>Symptoms Considered</h3>
+            <ul class="symptoms" id="symptomsList">
+                <li>Loading...</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        This AI-based prediction is for informational purposes only and does not replace veterinary advice.
+    </div>
+
+    <div class="actions">
+        <button onclick="window.location.href='/'">
+            Analyze Another Animal
+        </button>
+    </div>
+
+    <!-- 🔹 FETCH BACKEND RESULT -->
+    <script>
+        fetch("/get-result")
+            .then(res => res.json())
+            .then(data => {
+                // Disease
+                document.getElementById("diseaseName").textContent = data.disease;
+
+                // Confidence
+                document.getElementById("confidenceValue").textContent = data.confidence + "%";
+
+                // Risk level
+                const riskEl = document.getElementById("riskLevel");
+                riskEl.textContent = data.risk.toUpperCase();
+
+                riskEl.classList.remove("high", "medium", "low");
+                if (data.risk.toLowerCase() === "high") riskEl.classList.add("high");
+                else if (data.risk.toLowerCase() === "medium") riskEl.classList.add("medium");
+                else riskEl.classList.add("low");
+
+                // Symptoms
+                const list = document.getElementById("symptomsList");
+                list.innerHTML = "";
+                data.symptoms.forEach(symptom => {
+                    const li = document.createElement("li");
+                    li.textContent = symptom;
+                    list.appendChild(li);
+                });
+            })
+            .catch(err => {
+                console.error("Error loading result:", err);
+            });
+    </script>
+
+</body>
+
+
+</html>

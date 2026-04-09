@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Based Animal Disease Prediction System</title>
+   <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #e2e8f0;
+            /* Gradient Black into Dark Green */
+            background: radial-gradient(circle at 50% 0%, #062d24 0%, #000000 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(49, 151, 149, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #a0aec0;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #48bb78;
+        }
+
+        .hero {
+            margin-top: 60px;
+            padding: 120px 0 100px;
+            /* Subtle glow effect using dark green */
+            background: radial-gradient(circle at center, rgba(56, 161, 105, 0.08) 0%, transparent 70%);
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(72, 187, 120, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveBackground 30s linear infinite;
+        }
+
+        @keyframes moveBackground {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+
+        /* Fixed Gradient Text implementation */
+        .hero h1 span {
+            background: linear-gradient(to right, #68d391, #38a169);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2.5rem;
+            color: #cbd5e0;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 14px 42px;
+            background: #38a169;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 20px rgba(56, 161, 105, 0.3);
+        }
+
+        .cta-button:hover {
+            background: #2f855a;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(56, 161, 105, 0.4);
+        }
+
+        .section {
+            padding: 100px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #718096;
+            margin-bottom: 4rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .step-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(5px);
+            padding: 2.5rem;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid rgba(56, 161, 105, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeInScale 0.6s ease-out backwards;
+        }
+
+        .step-card:hover {
+            transform: translateY(-10px);
+            background: rgba(56, 161, 105, 0.05);
+            border-color: rgba(72, 187, 120, 0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: rgba(56, 161, 105, 0.1);
+            color: #68d391;
+            border: 1px solid #38a169;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0 auto 1.5rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            padding: 2rem;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: #38a169;
+            background: rgba(56, 161, 105, 0.02);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #2f855a 0%, #1a202c 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            color: #68d391;
+            font-size: 1.2rem;
+        }
+
+        .disclaimer {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 80px 0;
+        }
+
+        .disclaimer-content {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #171923;
+            padding: 3rem;
+            border-radius: 16px;
+            border-left: 4px solid #38a169;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        footer {
+            background: #000000;
+            color: #4a5568;
+            padding: 60px 0;
+            text-align: center;
+            border-top: 1px solid rgba(56, 161, 105, 0.1);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 26px;
+            height: 44px;
+            border: 2px solid rgba(56, 161, 105, 0.3);
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            padding-top: 6px;
+            animation: bounce 2s infinite;
+        }
+
+        .scroll-indicator::before {
+            content: '';
+            width: 4px;
+            height: 8px;
+            background: #68d391;
+            border-radius: 2px;
+            animation: scrollDown 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+            40% { transform: translateX(-50%) translateY(-8px); }
+            60% { transform: translateX(-50%) translateY(-4px); }
+        }
+
+        @keyframes scrollDown {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(16px); }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero h1 { font-size: 2.2rem; }
+            .section-title { font-size: 2rem; }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">
+                <div class="logo-icon">AI</div>
+                <span>VetPredict</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#disclaimer">Disclaimer</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="container hero-content">
+            <h1>AI-Based Animal Disease Prediction</h1>
+            <p>Advanced symptom analysis powered by machine learning to help identify potential health issues in your
+                animals</p>
+            <!-- ✅ FIXED -->
+            <a href="/profile" class="cta-button">Start Health Check</a>
+        </div>
+        <div class="scroll-indicator"></div>
+    </section>
+
+    <section id="how-it-works" class="section">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">Our AI-powered system analyzes symptoms to provide quick and accurate disease
+                predictions in three simple steps</p>
+
+            <div class="steps">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3>Select Animal & Symptoms</h3>
+                    <p>Choose your animal type and input the observed symptoms from our comprehensive database. Our
+                        system supports multiple species including cattle, dogs, cats, and more.</p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3>AI Analyzes Data</h3>
+                    <p>Our advanced machine learning algorithms process the symptoms using trained models on thousands
+                        of verified cases to identify potential diseases.</p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3>Get Prediction Results</h3>
+                    <p>Receive detailed predictions with confidence scores and risk levels, along with recommended next
+                        steps for veterinary consultation.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="section features">
+        <div class="container">
+            <h2 class="section-title">Key Features</h2>
+            <p class="section-subtitle">Cutting-edge technology designed to support animal health assessment</p>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⚕️</div>
+                    <h3>Symptom-Based Diagnosis</h3>
+                    <p>Our comprehensive symptom database covers a wide range of conditions across multiple animal
+                        species, enabling precise preliminary assessments based on observable indicators.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <h3>Machine Learning Powered</h3>
+                    <p>Built on state-of-the-art machine learning models trained on extensive veterinary datasets,
+                        ensuring accurate pattern recognition and disease prediction capabilities.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Confidence & Risk Levels</h3>
+                    <p>Every prediction includes detailed confidence scores and risk assessments, providing transparency
+                        and helping you understand the reliability of each diagnosis suggestion.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="disclaimer" class="section disclaimer">
+        <div class="container">
+            <div class="disclaimer-content">
+                <div class="disclaimer-header">
+                    <div class="disclaimer-icon">⚠️</div>
+                    <h2>Important Disclaimer</h2>
+                </div>
+                <p><strong>This is an AI-based prediction system for educational and informational purposes
+                        only.</strong></p>
+                <p>The predictions provided by this system are generated using machine learning algorithms and should be
+                    considered as preliminary assessments. They are <strong>not a substitute for professional veterinary
+                        diagnosis, treatment, or advice.</strong></p>
+                <p>Always consult with a licensed veterinarian for accurate diagnosis and appropriate treatment of your
+                    animal. In case of emergency or serious symptoms, seek immediate veterinary care.</p>
+                <p>The developers and operators of this system are not responsible for any decisions made based on the
+                    predictions provided. Use this tool as a supplementary resource to support informed discussions with
+                    your veterinarian.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 AI-Based Animal Disease Prediction System. All rights reserved.</p>
+            <p>Developed for educational purposes in veterinary health technology.</p>
+            <p>Developed By Team AV 🔥</p>
+        </div>
+    </footer>
+</body>
+
+</html>

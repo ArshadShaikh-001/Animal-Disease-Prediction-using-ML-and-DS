@@ -1,0 +1,48 @@
+# ===============================
+# Virtual Environments
+# ===============================
+backend/venv/
+venv/
+ENV/
+env/
+.venv/
+
+# ===============================
+# Python Cache
+# ===============================
+__pycache__/
+*.py[cod]
+*.pyo
+
+# ===============================
+# Machine Learning Artifacts
+# ===============================
+backend/model/*.pkl
+backend/model/*.joblib
+backend/model/*.h5
+backend/model/*.model
+
+# ===============================
+# Dataset Files
+# ===============================
+backend/data/*.xlsx
+backend/data/*.json
+
+# ===============================
+# IDE / Editor
+# ===============================
+.vscode/
+.idea/
+
+# ===============================
+# OS Files
+# ===============================
+.DS_Store
+Thumbs.db
+
+# ===============================
+# Logs & Temp
+# ===============================
+*.log
+*.tmp
+.cache/
