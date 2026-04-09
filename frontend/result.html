@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>AI Prediction Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/theme.css">
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -40,11 +41,18 @@
         /* Header */
         .header {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            gap: 12px;
             margin-bottom: 40px;
             padding-bottom: 20px;
             border-bottom: 1px solid rgba(56, 161, 105, 0.2);
+        }
+
+        .header-top {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .header h1 {
@@ -56,6 +64,20 @@
         .header span {
             color: var(--accent);
             text-shadow: 0 0 15px rgba(104, 211, 145, 0.3);
+        }
+
+        .dashboard-subtitle {
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #9ca3af;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: rgba(56, 161, 105, 0.1);
+            border: 1px solid rgba(56, 161, 105, 0.18);
+            display: inline-block;
+            margin-bottom: 14px;
         }
 
         /* Grid layout */
@@ -233,9 +255,13 @@
 <body>
 
     <div class="header">
-        <h1>AI Health <span>Dashboard</span></h1>
-        <div>Prediction Summary</div>
+        <div class="header-top">
+            <h1>AI Health <span>Dashboard</span></h1>
+            <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme" title="Toggle theme">☾</button>
+        </div>
     </div>
+
+    <div class="dashboard-subtitle">Prediction Summary</div>
 
     <div class="dashboard">
 
@@ -308,6 +334,7 @@
                 console.error("Error loading result:", err);
             });
     </script>
+    <script src="/theme.js"></script>
 
 </body>
 
