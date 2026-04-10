@@ -116,3 +116,8 @@ joblib.dump(label_encoders, "encoders.pkl")
 joblib.dump(target_encoder, "target_encoder.pkl")
 
 print("✅ Model trained and saved successfully")
+
+# Developed By Team AV 
+# 1. Arshad Shaikh
+# 2. Atharva Wadekar
+# 3. Kartikey Dhale
